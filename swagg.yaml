@@ -1,0 +1,463 @@
+openapi: 3.0.0
+info:
+  version: '1'
+  title: Delilah-Resto_API
+  description: API para manejo de informacion de un sistema de pedidos
+  contact:
+    email: "ignacioninci@gmail.com"
+tags: 
+  - name: "usuarios"
+    description: "usuarios de la plataforma"
+  - name: "productos"
+    description: "los productos del sistema de pedidos"
+  - name: "pedidos"
+    description: "los pedidos que realizan los usuarios al sistema"
+    
+paths: 
+  /usuarios:
+    post: 
+      tags: 
+        - "usuarios"
+      description: "creacion de los usuarios"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username:
+                  type: "string"
+                  example: "pipaBenedetto"
+                email:
+                  type: "string"
+                  example: "pipabenedetto@gmail.com"
+                fullname: 
+                  type: "string"
+                  example: "Dario Benedetto"
+                phone: 
+                  type: "integer"
+                  example: 3512457896
+                address: 
+                  type: "string"
+                  example: "Av. siempre viva"
+                pass: 
+                  type: "string"
+                  example: "pipa123456"
+              required: 
+                - "username"
+                - "email"
+                - "fullname"
+                - "phone"
+                - "address"
+                - "pass"
+      responses:
+        "200":
+          description: "El usuario ha sido creado correctamente"
+          content:
+            application/json:
+              schema: 
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "El usuario ha sido creado correctamente"
+                  user_id:
+                    type: "integer"
+                    example: 1
+        "400":
+          description: "Todos los campos deben estas completos"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "Todos los campos deben estar completos"
+        "500":
+          description: "Error de servidor"
+  /usuarios/login:
+    post:
+      tags:
+        - "usuarios"
+      description: "El inicio de sesion de los usuarios"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username:
+                  type: "string"
+                  example: "pipaBenedetto"
+                pass: 
+                  type: "string"
+                  example: "pipa123456"
+              required:
+                - "username"
+                - "pass"
+      responses:
+        "200":
+          description: "status: Logueo exitoso, (token)"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "Logueo exitoso"
+        "400":
+          description: "Error de logIn"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "Error de logIn"
+  /usuarios/{user_id}:
+    parameters: 
+      - in: "path"
+        name: "user_id"
+        required: true
+        description: "permite seleccionar usuarios por Id"
+        schema:
+          type: "integer"
+          example: 2
+    get:
+      tags:
+        - "usuarios"
+      description: "devuele los usuarios basados en el ID"
+      summary: "encuentra los usuarios por ID"
+      operationId: "getUsuariosByID"
+      responses:
+        "200":
+          description: "Lista de todos los usuarios"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  username: 
+                    type: "string"
+                    example: "pipaBenedetto"
+                  fullname:
+                    type: "string"
+                    example: "Dario Benedetto"
+                  email:
+                    type: "string"
+                    example: "pipabenedetto@gmail.com"
+                  address:
+                    type: "string"
+                    example: "Av. siempre viva"
+                  phone:
+                    type: "integer"
+                    example: 3512546989
+        "400":
+          description: "El usuario que intenta buscar no pertence al user id"
+        "500":
+          description: "Error de servidor"
+  /productos:
+    post:
+      tags:
+        - "productos"
+      summary: "agregar un nuevo producto"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                  example: "milanesa con papas fritas"
+                price:
+                  type: "number"
+                  example: 500
+                img_url:
+                  type: "string"
+                  example: "https://t1.rg.ltmcdn.com/es/images/2/0/9/img_milanesa_de_papas_32902_600_square.jpg"
+      responses:
+        "200":
+          description: "Producto creado exitosamente"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "Producto creado exitosamente"
+                  product_id:
+                    type: "integer"
+                    example: 3
+        "400":
+          description: "Producto existente, porfavor intente nuevamente"
+    get:
+      tags:
+        - "productos"
+      summary: "listado de todos los productos"
+      responses:
+        "200":
+          description: "Productos listados exitosamente"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  product_id:
+                    type: "integer"
+                    example: 2
+                  name:
+                    type: "string"
+                    example: "carne al horno con guarnicion"
+                  price:
+                    type: "number"
+                    example: 500
+                  img_url:
+                    type: "string"
+                    example: "https://www.lamoonrestaurantmiami.com/img/lomo-de-cordero-al-horno-con-guarnicion-238.jpg"
+        "400":
+          description: "Error Not Found"
+        "500":
+          description: "Error de servidor"
+  /productos/{product_id}:
+    parameters:
+    - in: "path"
+      name: "product_id"
+      description: "Id del producto a modificar"
+      required: true
+      schema:
+        type: "integer"
+        example: 2
+    patch:
+      tags: 
+        - "productos"
+      security: 
+        - bearerAuth:
+          - "read"
+      description: "Editar los productos cargados"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                  example: "Milanesa con papas fritas"
+                price:
+                  type: "number"
+                  example: 500
+                img_url:
+                  type: "string"
+                  example: "https://t1.rg.ltmcdn.com/es/images/2/0/9/img_milanesa_de_papas_32902_600_square.jpg"
+      responses:
+        "200": 
+          description: "El producto se ha modificado correctamente"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "El producto se ha modificado correctamente"
+        "400":
+          description: "Error al modificar el producto, intente nuevamente"
+        "500":
+          description: "Error interno del servidor"
+    delete:
+      tags:
+        - "productos"
+      security:
+        - bearerAuth:
+          - "read"
+      description: "Eliminar los productos cargados"
+      responses:
+        "200":
+          description: "El producto ha sido desactivado correctamente"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "El producto ha sido desactivado correctamente"
+        "400":
+          description: "Error al desactivar el producto, intente nuevamente"
+  /pedidos:
+    post:
+      tags:
+        - "pedidos"
+      security:
+        - bearerAuth:
+          - "read"
+      description: "que el usuario haga un nuevo pedido"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                total:
+                  type: "number"
+                  example: 2500
+                pay_method_id:
+                  type: "integer"
+                  example: 1
+                detail:
+                  type: "array"
+                  items:
+                    type: "object"
+                    properties:
+                      product_id:
+                        type: "integer"
+                        example: 1
+                      quantity:
+                        type: "integer"
+                        example: 5
+              required:
+                - "total"
+                - "payment_method_id"
+                - "product_id"
+                - "quantity"
+      responses:
+        "200":
+          description: "Pedido creado correctamente"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "Pedido creado correctamente"
+                  order_id:
+                    type: "integer"
+                    example: 1
+        "400":
+          description: "Faltan ingresar datos"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "Error en los parametros de carga"
+        "401":
+          description: "Error en metodo de pago o producto invalido"
+  /pedidos/{order_id}:
+    parameters:
+      - in: "path"
+        name: "order_id"
+        description: "seleccion del pedido"
+        required: true
+        schema:
+          type: "integer"
+          example: 1
+    get:
+      tags: 
+        - "pedidos"
+      security:
+        - bearerAuth:
+          - "read"
+      responses:
+        "200":
+          description: "traer los datos de un pedido por Id"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    total:
+                      type: "integer"
+                      example: 1500
+                    status_id:
+                      type: "integer"
+                      example: 2
+                    user_id: 
+                      type: "integer"
+                      example: 1
+                    pay_method_id:
+                      type: "integer"
+                      example: 1
+                    order_id: 
+                      type: "integer"
+                      example: 3
+                    detalle:
+                      type: "array"
+                      items:
+                        type: "object"
+                        properties:
+                          product_id:
+                            type: "integer"
+                            example: 2
+                          quantity:
+                            type: "integer"
+                            example: 3
+        "400":
+          description: "Pedido inexistente para el usuario"
+        "401":
+          description: "Pedido no encontrado, Este producto no existe"
+    patch:
+      tags:
+        - "pedidos"
+      security: 
+        - bearerAuth:
+          - "read"
+      description: "Editar el pedido"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                status_id:
+                  type: "integer"
+                  example: 2
+      responses:
+        "200":
+          description: "El pedido ha sido modificado exitosamente!"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "El pedido ha sido modificado exitosamente!"
+        "400":
+          description: "No se ha podido modificar su pedido, intente nuevamente"
+    delete:
+      tags:
+        - "pedidos"
+      security: 
+        - bearerAuth:
+          - "read"
+      description: "Eliminar el pedido"
+      responses:
+        "200":
+          description: "El pedido ha sido dado de baja con exito!"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "El pedido ha sido dado de baja con exito!"
+        "400":
+          description: "Error al dar de baja el pedido, intente nuevamente"
+components:
+  securitySchemes:
+    bearerAuth:            
+      type: http
+      scheme: bearer
+      bearerFormat: JWT   
